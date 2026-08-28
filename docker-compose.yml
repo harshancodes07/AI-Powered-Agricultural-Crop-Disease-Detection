@@ -1,0 +1,25 @@
+# Local development database only.
+# The backend, ML service and frontend are run directly (uvicorn / vite) so you
+# get fast reloads. Bring this up with:  docker compose up -d
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: agri-postgres
+    environment:
+      POSTGRES_USER: agri
+      POSTGRES_PASSWORD: agri
+      POSTGRES_DB: agri
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Runs once, the first time the volume is created.
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agri -d agri"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:

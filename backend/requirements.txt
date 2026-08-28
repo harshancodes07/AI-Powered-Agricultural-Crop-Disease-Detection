@@ -1,0 +1,15 @@
+# Version floors rather than exact pins: this project is developed on Python
+# 3.14, which several packages only support in their newest releases.
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.20
+pydantic>=2.12
+pydantic-settings>=2.7.1
+sqlalchemy>=2.0.37
+httpx>=0.28.1
+pillow>=11.1.0
+python-dotenv>=1.0.1
+
+# PostgreSQL + PostGIS. Not needed if you run the SQLite fallback.
+psycopg[binary]>=3.3.4
+geoalchemy2>=0.17.0

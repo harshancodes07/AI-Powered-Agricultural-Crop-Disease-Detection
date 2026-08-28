@@ -1,0 +1,33 @@
+# Environment / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+.vite/
+
+# Local data
+uploads/
+*.db
+*.sqlite3
+postgres-data/
+
+# ML model weights (large generated files)
+*.pt
+*.pth
+*.onnx
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
