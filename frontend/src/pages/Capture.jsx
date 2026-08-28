@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import CameraCapture, { cameraSupported } from '../components/CameraCapture'
 import { NetworkError, createReport } from '../services/api'
-import { enqueue } from '../offline/queue'
+import { enqueue, recordSynced } from '../offline/queue'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
 
 const CROPS = ['tomato', 'potato', 'corn', 'rice']
@@ -94,6 +94,21 @@ export default function Capture() {
 
     try {
       const detail = await createReport(payload)
+
+      // Also record it locally, so it shows up in "My reports". History reads
+      // from IndexedDB — that is what lets it work with no connection — so an
+      // online report that skipped the queue would otherwise be invisible there.
+      await recordSynced({
+        serverId: detail.report.id,
+        cropType: crop,
+        language: i18n.language,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        imageUrl: detail.report.image_url,
+        disease: detail.prediction?.disease,
+        confidence: detail.prediction?.confidence
+      })
+
       navigate('/farmer/result', { state: { detail } })
     } catch (err) {
       if (err instanceof NetworkError) {

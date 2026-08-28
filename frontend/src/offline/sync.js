@@ -5,7 +5,7 @@
 // deduplicates on clientUuid, so a half-finished sync that is retried cannot
 // create duplicate reports.
 
-import { syncReports } from '../services/api'
+import { getReport, syncReports } from '../services/api'
 import { STATUS, blobToBase64, pending, update } from './queue'
 
 let running = false
@@ -60,11 +60,24 @@ export async function syncPending() {
     for (const result of results) {
       if (result.status === 'SYNCED') {
         synced += 1
-        await update(result.client_uuid, {
+        const changes = {
           status: STATUS.SYNCED,
           serverId: result.report_id,
           error: null
-        })
+        }
+        // Pull the diagnosis so the history entry matches an online report.
+        // A failure here is cosmetic only — the report itself is already safe.
+        try {
+          const detail = await getReport(result.report_id)
+          changes.disease = detail.prediction?.disease ?? null
+          changes.confidence = detail.prediction?.confidence ?? null
+          changes.imageUrl = detail.report?.image_url ?? null
+          // The server has the image now; drop the local copy to free space.
+          changes.image = null
+        } catch {
+          /* keep the local blob if we could not fetch the detail */
+        }
+        await update(result.client_uuid, changes)
       } else {
         failed += 1
         // Back to PENDING, not FAILED-and-forgotten: it stays retryable.

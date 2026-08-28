@@ -66,7 +66,15 @@ async def process_report(
     _set_location(report, latitude, longitude)
 
     db.add(report)
-    db.flush()  # gives the report an id without committing yet
+    # Commit before calling the ML service, for two reasons:
+    #   1. The farmer's report is durable from this moment on, whatever happens
+    #      to the model call.
+    #   2. It releases the write lock. Holding a database transaction open
+    #      across a network round-trip is what makes concurrent syncs collide
+    #      ("database is locked" on SQLite) and can stall the event loop long
+    #      enough for the ML request itself to time out.
+    db.commit()
+    db.refresh(report)
 
     prediction_row: Prediction | None = None
     treatment: dict | None = None

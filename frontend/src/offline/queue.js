@@ -54,6 +54,11 @@ export async function enqueue({ file, cropType, language, latitude, longitude, r
     longitude: longitude ?? null,
     region: region ?? null,
     status: STATUS.PENDING,
+    // Filled in once the server has analysed it, so history can show the result.
+    serverId: null,
+    imageUrl: null,
+    disease: null,
+    confidence: null,
     error: null,
     result: null,
     createdAt: new Date().toISOString()
@@ -62,6 +67,51 @@ export async function enqueue({ file, cropType, language, latitude, longitude, r
   await db.put(STORE, record)
   return record
 }
+
+/**
+ * Record a report that already reached the server successfully.
+ *
+ * Online submissions go straight to the API, so without this they would never
+ * appear in "My reports" — the history screen reads from IndexedDB, which is
+ * what makes it work with no connection.
+ *
+ * We deliberately do NOT keep the image blob here: the server already has the
+ * file and hands back a URL, so storing the bytes again would fill the device's
+ * quota for no benefit.
+ */
+export async function recordSynced({
+  serverId,
+  cropType,
+  language,
+  latitude,
+  longitude,
+  region,
+  imageUrl,
+  disease,
+  confidence
+}) {
+  const record = {
+    clientUuid: newUuid(),
+    image: null,
+    imageUrl: imageUrl ?? null,
+    cropType,
+    language,
+    latitude: latitude ?? null,
+    longitude: longitude ?? null,
+    region: region ?? null,
+    status: STATUS.SYNCED,
+    serverId: serverId ?? null,
+    disease: disease ?? null,
+    confidence: confidence ?? null,
+    error: null,
+    result: null,
+    createdAt: new Date().toISOString()
+  }
+  const db = await dbPromise()
+  await db.put(STORE, record)
+  return record
+}
+
 
 export async function all() {
   const db = await dbPromise()

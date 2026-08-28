@@ -6,7 +6,7 @@ import StatusBadge from '../components/StatusBadge'
 import { all, remove } from '../offline/queue'
 import { onSyncChange, syncPending } from '../offline/sync'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
-import { cropLabel, formatDate } from '../utils/format'
+import { confidencePercent, cropLabel, diseaseLabel, formatDate } from '../utils/format'
 
 /**
  * Everything captured on this device, queued or sent.
@@ -61,9 +61,30 @@ export default function History() {
         <ul className="space-y-3">
           {records.map((record) => (
             <li key={record.clientUuid} className="card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-bold text-lg">{cropLabel(t, record.cropType)}</p>
+              <div className="flex items-start gap-3">
+                {record.imageUrl && (
+                  <img
+                    src={record.imageUrl}
+                    alt=""
+                    className="w-16 h-16 rounded-lg object-cover border border-slate-200 shrink-0"
+                  />
+                )}
+
+                <div className="min-w-0 flex-1">
+                  {/* The diagnosis is the useful line; the crop is context. */}
+                  {record.disease ? (
+                    <p className="font-bold text-lg">{diseaseLabel(t, record.disease)}</p>
+                  ) : (
+                    <p className="font-bold text-lg">{cropLabel(t, record.cropType)}</p>
+                  )}
+                  {/* Only worth repeating the crop once a diagnosis is the headline. */}
+                  {record.disease && (
+                    <p className="text-sm text-slate-700">
+                      {cropLabel(t, record.cropType)}
+                      {record.confidence != null &&
+                        ` · ${confidencePercent(record.confidence)}`}
+                    </p>
+                  )}
                   <p className="text-sm text-slate-600">
                     {formatDate(record.createdAt, i18n.language)}
                   </p>
@@ -71,6 +92,7 @@ export default function History() {
                     <p className="text-sm text-red-800 mt-1 font-semibold">{record.error}</p>
                   )}
                 </div>
+
                 <StatusBadge status={record.status} />
               </div>
 

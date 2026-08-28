@@ -7,7 +7,7 @@ app/models/report.py.
 
 from collections.abc import Generator
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.core.config import settings
@@ -19,6 +19,29 @@ connect_args = (
 )
 
 engine = create_engine(settings.DATABASE_URL, connect_args=connect_args, future=True)
+
+
+if settings.DATABASE_URL.startswith("sqlite"):
+
+    @event.listens_for(engine, "connect")
+    def _configure_sqlite(dbapi_connection, _record):
+        """Make SQLite behave under concurrent writes.
+
+        By default SQLite locks the whole database for a write and gives up
+        immediately if another connection holds it, which surfaces as
+        "database is locked" the moment two reports sync at once.
+
+        WAL lets readers continue during a write, and busy_timeout makes a
+        writer wait its turn instead of failing straight away. PostgreSQL needs
+        none of this, hence the guard.
+        """
+        cursor = dbapi_connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA busy_timeout=10000")  # wait up to 10s for a lock
+        cursor.execute("PRAGMA synchronous=NORMAL")  # safe with WAL, much faster
+        cursor.close()
+
+
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
