@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    /* Comfortable default for outdoor phone use. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Focus must always be visible — many users navigate by keyboard or switch. */
+  :focus-visible {
+    @apply outline-none ring-4 ring-brand-600 ring-offset-2 ring-offset-white rounded;
+  }
+}
+
+@layer components {
+  /* Buttons are large enough to hit reliably with a thumb (min 48px tall). */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-5 py-3
+           rounded-xl font-semibold text-center transition
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-700 text-white hover:bg-brand-800 active:bg-brand-900;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-brand-800 border-2 border-brand-700 hover:bg-brand-50;
+  }
+  .btn-quiet {
+    @apply btn bg-slate-100 text-slate-800 hover:bg-slate-200;
+  }
+  .card {
+    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
+  }
+  .field-label {
+    @apply block text-base font-semibold text-slate-800 mb-2;
+  }
+  .input {
+    @apply w-full min-h-[3rem] px-4 py-3 rounded-xl border-2 border-slate-300
+           bg-white text-slate-900 focus:border-brand-700;
+  }
+}
