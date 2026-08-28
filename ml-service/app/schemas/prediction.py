@@ -8,6 +8,19 @@ the trained model requires no backend changes.
 from pydantic import BaseModel, Field
 
 
+class Alternative(BaseModel):
+    """A runner-up diagnosis.
+
+    Several crop diseases look genuinely similar (early vs late blight, for
+    instance). Exposing the alternatives lets the interface present the result
+    as evidence to check rather than a verdict to obey.
+    """
+
+    crop: str
+    disease: str
+    confidence: float = Field(..., ge=0.0, le=1.0)
+
+
 class PredictionResponse(BaseModel):
     crop: str = Field(..., description="Crop the model believes it is looking at")
     disease: str = Field(
@@ -19,6 +32,17 @@ class PredictionResponse(BaseModel):
         ..., ge=0.0, le=1.0, description="Model confidence, 0.0-1.0"
     )
     model_version: str = Field(..., description="Which model produced this result")
+    alternatives: list[Alternative] = Field(
+        default_factory=list,
+        description="Other plausible diagnoses, most likely first.",
+    )
+    crop_supported: bool = Field(
+        True,
+        description=(
+            "False when the model was never trained on the crop the farmer "
+            "selected. The result must not be presented as a diagnosis."
+        ),
+    )
 
     model_config = {
         # 'model_' is a protected prefix in Pydantic v2; we use it deliberately
@@ -38,5 +62,9 @@ class PredictionResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     model_version: str
+    # "real" or "mock" — never let a mock result be mistaken for a real one.
+    engine: str = "mock"
+    # Why the real model could not load, when it could not.
+    model_error: str | None = None
 
     model_config = {"protected_namespaces": ()}

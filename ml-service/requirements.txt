@@ -1,4 +1,13 @@
-fastapi==0.115.6
-uvicorn[standard]==0.34.0
-python-multipart==0.0.20
-pillow==11.1.0
+# Version floors rather than exact pins: this project runs on Python 3.14, which
+# several packages only support in their newest releases.
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.20
+pillow>=11.1.0
+
+# --- Real model (optional but recommended) ---
+# Without these the service still runs, but falls back to the deterministic mock
+# predictor and says so in /health. Both are free and open source; the model
+# weights download once from Hugging Face and are then cached locally.
+torch>=2.6
+transformers>=4.48

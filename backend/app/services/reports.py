@@ -8,6 +8,7 @@ Guiding rule (CLAUDE.md section 22): a farmer's report is never lost. If the ML
 service is down, the report is still saved with status FAILED and can be retried.
 """
 
+import json
 from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
@@ -86,6 +87,8 @@ async def process_report(
         crop=result["crop"],
         confidence=result["confidence"],
         model_version=result["model_version"],
+        alternatives=json.dumps(result.get("alternatives", []), ensure_ascii=False),
+        crop_supported=result.get("crop_supported", True),
     )
     db.add(prediction_row)
 

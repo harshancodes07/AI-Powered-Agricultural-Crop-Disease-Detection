@@ -1,0 +1,7 @@
+# Minimal install: runs the service with the mock predictor only.
+# Use this if you cannot download PyTorch (~200 MB) — the API contract is
+# identical, only the quality of the prediction differs.
+fastapi>=0.115.6
+uvicorn[standard]>=0.34.0
+python-multipart>=0.0.20
+pillow>=11.1.0

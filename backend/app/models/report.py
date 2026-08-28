@@ -110,6 +110,11 @@ class Prediction(Base):
     crop: Mapped[str] = mapped_column(String(64), nullable=False)
     confidence: Mapped[float] = mapped_column(Float, nullable=False)
     model_version: Mapped[str] = mapped_column(String(64), nullable=False)
+    # JSON array of runner-up diagnoses, so a stored report can still show the
+    # differential the farmer saw at the time.
+    alternatives: Mapped[str | None] = mapped_column(Text)
+    # False when the model was never trained on the crop the farmer chose.
+    crop_supported: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     report: Mapped["CropReport"] = relationship(back_populates="prediction")
@@ -124,6 +129,8 @@ class Disease(Base):
     crop: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(160), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
+    # none | low | moderate | high — how urgently the farmer needs to act.
+    severity: Mapped[str] = mapped_column(String(16), default="moderate", nullable=False)
 
     __table_args__ = (UniqueConstraint("key", "crop", name="uq_disease_key_crop"),)
 
@@ -138,6 +145,19 @@ class Treatment(Base):
         ForeignKey("diseases.id", ondelete="CASCADE"), nullable=False, index=True
     )
     language: Mapped[str] = mapped_column(String(8), nullable=False)
+
+    # A one-line plain-language summary, shown as the headline advice.
+    summary: Mapped[str | None] = mapped_column(Text)
+    # What the farmer should look for to confirm the AI's guess themselves.
+    symptoms: Mapped[str | None] = mapped_column(Text)
+    # The conditions that let this disease take hold.
+    cause: Mapped[str | None] = mapped_column(Text)
+    # JSON arrays of short steps: what to do today, and how to prevent a return.
+    immediate_actions: Mapped[str | None] = mapped_column(Text)
+    prevention: Mapped[str | None] = mapped_column(Text)
+    # When a human expert is genuinely required.
+    expert_note: Mapped[str | None] = mapped_column(Text)
+
     recommendation: Mapped[str] = mapped_column(Text, nullable=False)
     # Where this advice came from. A treatment with no verifiable source must
     # not be presented as verified guidance.

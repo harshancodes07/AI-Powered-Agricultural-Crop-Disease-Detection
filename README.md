@@ -16,8 +16,10 @@ credit card is required to run it.**
 
 - Choose a language (English or Tamil) — remembered across visits
 - Photograph an affected leaf straight from the phone camera
-- Get a disease prediction with its confidence and an honest uncertainty note
-- Get a verified treatment recommendation in the chosen language
+- Get a disease prediction from a real trained model, with its confidence, the
+  runner-up diagnoses, and an honest uncertainty note
+- Get verified treatment guidance in the chosen language, broken into what to
+  look for, why it happened, what to do today, and how to prevent it returning
 - Optionally share location — always asked for explicitly, never taken silently
 - **Capture reports with no internet.** They queue on the device and sync automatically
   when the connection returns
@@ -101,7 +103,14 @@ python3 -m venv .venv
 ./.venv/bin/uvicorn app.main:app --reload --port 8001
 ```
 
-Check it: <http://localhost:8001/health>
+Check it: <http://localhost:8001/health> — the `engine` field says whether the
+real model or the mock fallback is answering.
+
+This installs PyTorch (~200 MB, free) and downloads a ~14 MB model on first run.
+If you cannot do that, `pip install -r requirements-mock.txt` instead: the
+service still runs and the API is identical, but predictions come from a
+deterministic mock. See [ml-service/MODEL.md](ml-service/MODEL.md) for what the
+model can and cannot do.
 
 ### 2. Backend (port 8000)
 
@@ -260,6 +269,11 @@ The seeded entries are standard integrated-disease-management practices, written
 region-, crop- and regulation-specific. Each entry tells the farmer to confirm chemical
 control with a local agricultural officer.
 
+Each entry is structured rather than a single paragraph — symptoms to check, the
+conditions that caused it, numbered actions for today, prevention for next season,
+and when a human expert is genuinely needed. Every disease the model can predict for
+a crop the app offers has a verified entry in both English and Tamil.
+
 When no verified entry exists, the app says so:
 
 > *No verified recommendation is currently available. Please consult a qualified
@@ -305,9 +319,15 @@ See [`docs/DEMO.md`](docs/DEMO.md) for the full click-through, including the off
 
 These are deliberate scope cuts for the MVP, not oversights:
 
-- **The ML model is a mock.** It returns deterministic, plausible predictions using the
-  exact contract a real model will use. Swap `ml-service/app/inference/mock_predictor.py`
-  for a PyTorch forward pass and nothing else changes.
+- **The model is trained on PlantVillage, whose images are mostly single leaves on a
+  plain background.** Accuracy on a cluttered field photograph is meaningfully lower
+  than the benchmark numbers for that dataset suggest. This is why the interface always
+  shows confidence, alternatives and an explicit "confirm with an expert" note.
+- **Rice is not covered by the model.** The app accepts rice reports and stores them,
+  but returns `crop_supported: false` and refuses to diagnose rather than guessing.
+- **A mock predictor still exists as a fallback.** If PyTorch or the weights are
+  unavailable the service keeps running on the mock, and says so in `/health` and in
+  every `model_version`. A mock result can never be mistaken for a real one.
 - **No authentication.** The dashboard is open. It is fine locally; **do not deploy this
   as-is.** `JWT_SECRET` is already wired for when auth is added.
 - **No Alembic migrations.** Tables are created with `create_all()` on startup, which will

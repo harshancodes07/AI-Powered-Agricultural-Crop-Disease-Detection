@@ -16,8 +16,8 @@ from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import dashboard, reports
 from app.core.config import settings
-from app.database.seed import seed
-from app.database.session import Base, SessionLocal, engine
+from app.database.seed import ensure_schema, seed
+from app.database.session import SessionLocal
 from app.services import ml_client
 
 # Importing the models module registers every table on Base.metadata.
@@ -26,10 +26,11 @@ import app.models  # noqa: F401
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables and reference data on startup.
-    # NOTE: this is an MVP shortcut. A real deployment uses Alembic migrations —
-    # create_all will not apply changes to tables that already exist.
-    Base.metadata.create_all(bind=engine)
+    # Create tables and refresh reference data on startup.
+    # NOTE: an MVP shortcut. A real deployment uses Alembic migrations. The
+    # reference tables (diseases, treatments) are rebuilt from source each time,
+    # which is safe because no report points at them by foreign key.
+    ensure_schema()
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
 
     db = SessionLocal()

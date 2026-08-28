@@ -5,11 +5,24 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 
+class AlternativeOut(BaseModel):
+    crop: str
+    disease: str
+    confidence: float
+    # Present when we hold a verified treatment for this alternative too.
+    disease_name: str | None = None
+
+
 class PredictionOut(BaseModel):
     disease: str
     crop: str
     confidence: float
     model_version: str
+    # Runner-up diagnoses. Diseases like early and late blight look alike, so a
+    # single answer overstates what the model actually knows.
+    alternatives: list[AlternativeOut] = []
+    # False when the model was never trained on the crop the farmer selected.
+    crop_supported: bool = True
 
     model_config = {"protected_namespaces": (), "from_attributes": True}
 
@@ -17,6 +30,19 @@ class PredictionOut(BaseModel):
 class TreatmentOut(BaseModel):
     disease_name: str
     description: str | None = None
+
+    # Structured guidance, so the UI can present it as sections rather than one
+    # undifferentiated wall of text.
+    summary: str | None = None
+    symptoms: str | None = None
+    cause: str | None = None
+    immediate_actions: list[str] = []
+    prevention: list[str] = []
+    expert_note: str | None = None
+    # none | low | moderate | high
+    severity: str = "moderate"
+
+    # The same advice as a single paragraph, for API clients that want plain text.
     recommendation: str
     source: str | None = None
     # False means "we have no verified advice for this" — the UI must show that

@@ -59,10 +59,24 @@ Have one real crop-leaf photo saved on the machine (or use a phone).
 On the result screen, highlight:
 
 - The predicted problem, **the confidence percentage, and the model version**
-- The uncertainty note: *"This is an AI prediction, not a confirmed diagnosis."*
-- The treatment recommendation **in the selected language**
-- The **Source** line — and say plainly that these recommendations come from a
-  structured database, not from a generative model inventing pesticide advice
+  (`plantvillage-mobilenetv2-v1` — a real PyTorch model, not a mock)
+- **Other possibilities** — the runner-up diagnoses. Say why this matters: early
+  blight and late blight genuinely look alike in a photo, and hiding that would
+  make the system look more certain than it is.
+- **Urgency** — act now / act soon / monitor
+- **What to look for** — lets the farmer verify the AI's guess themselves
+- **Do this now** — numbered, concrete steps
+- **Stop it coming back** and **When to ask an expert**
+- The **Source** line — say plainly that this guidance comes from a structured
+  database, not from a generative model inventing pesticide advice, and that it
+  deliberately contains no dosages
+
+### Show the honesty feature (worth 20 seconds)
+
+Make one more report and choose **Rice**. The model was never trained on rice, so
+instead of a confident wrong answer you get *"Crop not supported by the model"* and
+no diagnosis at all. This is a deliberate design decision and a strong talking
+point.
 
 ---
 

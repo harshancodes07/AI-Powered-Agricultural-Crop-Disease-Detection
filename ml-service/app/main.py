@@ -12,7 +12,8 @@ import io
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
 
-from app.inference.mock_predictor import MODEL_VERSION, SUPPORTED_CLASSES, predict
+from app.inference import engine
+from app.inference.labels import SUPPORTED_CROPS, UNSUPPORTED_APP_CROPS
 from app.schemas.prediction import HealthResponse, PredictionResponse
 
 # Refuse anything larger than this, so a bad upload cannot exhaust memory.
@@ -21,18 +22,30 @@ MAX_IMAGE_BYTES = 10 * 1024 * 1024  # 10 MB
 app = FastAPI(
     title="Crop Disease ML Service",
     description=(
-        "Predicts crop diseases from leaf images. "
-        "Currently backed by a deterministic mock model — see /health for the "
-        "active model version."
+        "Predicts crop diseases from leaf images using a MobileNetV2 model "
+        "fine-tuned on the PlantVillage dataset. Falls back to a deterministic "
+        "mock if the model cannot be loaded — always check /health to see which "
+        "engine is actually answering."
     ),
-    version="1.0.0",
+    version="2.0.0",
 )
+
+
+@app.on_event("startup")
+def startup() -> None:
+    # Load the model now, so the first farmer request does not pay for it.
+    engine.initialise()
 
 
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    """Liveness probe. The backend uses this to report ML availability."""
-    return HealthResponse(status="ok", model_version=MODEL_VERSION)
+    """Liveness probe, and which engine is actually answering right now."""
+    return HealthResponse(
+        status="ok",
+        model_version=engine.model_version(),
+        engine=engine.engine_name(),
+        model_error=engine.load_error(),
+    )
 
 
 @app.get("/classes")
@@ -43,8 +56,10 @@ def classes() -> dict:
     and callers should be able to see its limits.
     """
     return {
-        "model_version": MODEL_VERSION,
-        "classes": [{"crop": c, "disease": d} for c, d in SUPPORTED_CLASSES],
+        "model_version": engine.model_version(),
+        "engine": engine.engine_name(),
+        "supported_crops": SUPPORTED_CROPS,
+        "unsupported_app_crops": UNSUPPORTED_APP_CROPS,
     }
 
 
@@ -76,4 +91,4 @@ async def predict_endpoint(
             detail="The uploaded file is not a readable image.",
         )
 
-    return PredictionResponse(**predict(contents, crop_hint=crop))
+    return PredictionResponse(**engine.predict(contents, crop_hint=crop))

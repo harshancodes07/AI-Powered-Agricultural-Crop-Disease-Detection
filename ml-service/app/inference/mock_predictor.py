@@ -60,4 +60,8 @@ def predict(image_bytes: bytes, crop_hint: str | None = None) -> dict:
         "disease": disease,
         "confidence": round(confidence, 4),
         "model_version": MODEL_VERSION,
+        # The mock cannot offer a real differential diagnosis; an empty list is
+        # the honest answer and keeps the contract identical to the real model.
+        "alternatives": [],
+        "crop_supported": True,
     }

@@ -2,13 +2,15 @@
 
 import base64
 import binascii
+import json
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
-from app.models import CropReport
+from app.models import CropReport, Disease
 from app.schemas.report import (
+    AlternativeOut,
     PredictionOut,
     ReportDetail,
     ReportOut,
@@ -24,6 +26,33 @@ from app.storage import images
 router = APIRouter(prefix="/api/reports", tags=["reports"])
 
 
+def _alternatives(db: Session, prediction) -> list[AlternativeOut]:
+    """Decode stored alternatives and attach the proper disease name to each."""
+    try:
+        raw = json.loads(prediction.alternatives or "[]")
+    except (json.JSONDecodeError, TypeError):
+        return []
+
+    out = []
+    for item in raw:
+        if not isinstance(item, dict) or "disease" not in item:
+            continue
+        disease = (
+            db.query(Disease)
+            .filter_by(key=item["disease"], crop=item.get("crop"))
+            .one_or_none()
+        )
+        out.append(
+            AlternativeOut(
+                crop=item.get("crop", ""),
+                disease=item["disease"],
+                confidence=item.get("confidence", 0.0),
+                disease_name=disease.name if disease else None,
+            )
+        )
+    return out
+
+
 def _detail(db: Session, report: CropReport, treatment: dict | None) -> ReportDetail:
     prediction = report.prediction
     if treatment is None and prediction is not None:
@@ -33,9 +62,21 @@ def _detail(db: Session, report: CropReport, treatment: dict | None) -> ReportDe
             disease_key=prediction.disease,
             language=report.language,
         )
+
+    prediction_out = None
+    if prediction is not None:
+        prediction_out = PredictionOut(
+            disease=prediction.disease,
+            crop=prediction.crop,
+            confidence=prediction.confidence,
+            model_version=prediction.model_version,
+            alternatives=_alternatives(db, prediction),
+            crop_supported=bool(prediction.crop_supported),
+        )
+
     return ReportDetail(
         report=ReportOut.model_validate(report),
-        prediction=PredictionOut.model_validate(prediction) if prediction else None,
+        prediction=prediction_out,
         treatment=TreatmentOut(**treatment) if treatment else None,
     )
 
