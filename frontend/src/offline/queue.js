@@ -88,12 +88,17 @@ export async function remove(clientUuid) {
   await db.delete(STORE, clientUuid)
 }
 
-/** Reports still waiting to reach the server. */
+/**
+ * Reports still waiting to reach the server.
+ *
+ * UPLOADING and PROCESSING count as pending too: if the tab was closed or
+ * reloaded mid-sync, a report would otherwise be stranded in that state forever
+ * and never retried. Re-sending is safe because the backend deduplicates on
+ * clientUuid.
+ */
 export async function pending() {
   const records = await all()
-  return records.filter(
-    (r) => r.status === STATUS.PENDING || r.status === STATUS.FAILED
-  )
+  return records.filter((r) => r.status !== STATUS.SYNCED)
 }
 
 export async function pendingCount() {
