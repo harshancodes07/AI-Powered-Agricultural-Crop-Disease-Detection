@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import CameraCapture, { cameraSupported } from '../components/CameraCapture'
 import { NetworkError, createReport } from '../services/api'
 import { enqueue } from '../offline/queue'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
@@ -20,7 +21,12 @@ export default function Capture() {
   const [locationState, setLocationState] = useState('idle') // idle|locating|granted|denied|unsupported
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [cameraOpen, setCameraOpen] = useState(false)
   const errorRef = useRef(null)
+
+  // On a phone the file input's `capture` attribute opens the camera app. On a
+  // laptop that attribute does nothing, so we open a live viewfinder instead.
+  const useLiveCamera = cameraSupported()
 
   // Release the object URL so repeated captures don't leak memory.
   useEffect(() => {
@@ -131,18 +137,31 @@ export default function Capture() {
         )}
 
         <div className="grid gap-3 sm:grid-cols-2">
-          {/* `capture` opens the rear camera directly on a phone. */}
-          <label className="btn-primary cursor-pointer">
-            <span aria-hidden="true">📷</span>
-            {previewUrl ? t('capture_change_photo') : t('capture_take_photo')}
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="sr-only"
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            />
-          </label>
+          {useLiveCamera ? (
+            // Laptops and any secure-context browser: open a real viewfinder.
+            <button
+              type="button"
+              onClick={() => setCameraOpen(true)}
+              className="btn-primary"
+            >
+              <span aria-hidden="true">📷</span>
+              {previewUrl ? t('capture_change_photo') : t('capture_take_photo')}
+            </button>
+          ) : (
+            // Fallback (e.g. a phone reaching the dev server over plain http):
+            // `capture` hands off to the native camera app.
+            <label className="btn-primary cursor-pointer">
+              <span aria-hidden="true">📷</span>
+              {previewUrl ? t('capture_change_photo') : t('capture_take_photo')}
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="sr-only"
+                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              />
+            </label>
+          )}
 
           <label className="btn-secondary cursor-pointer">
             {t('capture_choose_file')}
@@ -229,6 +248,16 @@ export default function Capture() {
 
       {!online && (
         <p className="text-slate-700 text-center">{t('capture_saved_offline')}</p>
+      )}
+
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onCapture={(photo) => {
+            setFile(photo)
+            setCameraOpen(false)
+          }}
+        />
       )}
     </form>
   )

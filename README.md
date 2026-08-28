@@ -133,6 +133,24 @@ is no API URL to configure.
 To try it on a real phone, use the `Network:` address Vite prints — both devices must be
 on the same Wi-Fi.
 
+#### How the camera works
+
+The app takes photos two different ways, chosen automatically:
+
+- **Laptop / desktop** — a live viewfinder using `getUserMedia`, with a shutter button
+  that grabs a frame and encodes it as a JPEG. Desktop browsers ignore the
+  `capture` attribute on file inputs, so without this there would be no way to use a
+  built-in webcam.
+- **Phone, or any browser without `getUserMedia`** — falls back to
+  `<input type="file" capture="environment">`, which hands off to the phone's own camera
+  app.
+
+`getUserMedia` requires a **secure context**. `http://localhost` counts as secure, so the
+viewfinder works on the dev machine. A plain-http LAN address (`http://192.168.x.x:5173`)
+does **not**, so a phone on the LAN automatically uses the file-input fallback — which is
+the better experience on a phone anyway. Choosing an existing photo from files always
+works everywhere.
+
 ### 4. Database
 
 **SQLite (default, zero setup).** Nothing to do — a file `backend/agri.db` is created

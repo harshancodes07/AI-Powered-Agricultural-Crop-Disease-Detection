@@ -44,8 +44,12 @@ Have one real crop-leaf photo saved on the machine (or use a phone).
    *Point out: the entire interface changes, including the navigation.* Switch back to
    English if it is easier to narrate, or stay in Tamil to make the point.
 3. Tap **Take a photo of my crop**.
-4. Tap **Choose from gallery** (on a laptop) or **Take photo** (on a phone — this opens
-   the rear camera directly). Select your leaf photo.
+4. Tap **Take photo**.
+   - *On a laptop*, a live viewfinder opens using the built-in webcam. Point it at a leaf
+     (or a photo of one on your phone screen) and press **Capture photo**.
+   - *On a phone*, this opens the camera app directly.
+   - **Choose from gallery** is always available if you would rather use a saved photo —
+     useful if the room is dark or you want a guaranteed-good demo image.
 5. Choose the crop, e.g. **Tomato**.
 6. Tap **Share my location** and allow the browser prompt.
    *Point out: location is only ever requested on an explicit tap, and the report works
@@ -126,6 +130,8 @@ standalone, without browser chrome, like a native app.
 | Dashboard is empty | Run `scripts_demo_data.py`. |
 | Queued reports never sync | Check DevTools throttling really is back to **Online**, then press **Send now**. |
 | Map tiles are blank | OpenStreetMap tiles need internet. Turn throttling off. |
+| Viewfinder shows "permission declined" | Allow camera access for `localhost` in the browser's site settings, then reopen. |
+| No viewfinder on a phone over Wi-Fi | Expected — plain http is not a secure context, so the phone uses its native camera app instead. |
 | Port already in use | `lsof -ti:8000 \| xargs kill` (or 8001 / 5173). |
 
 ---

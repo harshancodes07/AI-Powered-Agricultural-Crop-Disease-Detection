@@ -10,7 +10,6 @@
   "retry": "Try again",
   "loading": "Loading…",
   "skip": "Skip",
-
   "nav_home": "Home",
   "nav_capture": "New report",
   "nav_history": "My reports",
@@ -18,19 +17,28 @@
   "nav_map": "Map",
   "nav_reports": "Reports",
   "nav_analytics": "Analytics",
-
   "home_title": "Check your crop",
   "home_intro": "Take a photo of an affected leaf. You will get a possible diagnosis and verified advice in your language.",
   "home_start": "Take a photo of my crop",
   "home_history": "See my past reports",
   "home_gov": "Government dashboard",
-
   "capture_title": "New crop report",
   "capture_step_photo": "1. Add a photo of the affected leaf",
   "capture_take_photo": "Take photo",
   "capture_choose_file": "Choose from gallery",
   "capture_photo_selected": "Photo selected",
   "capture_change_photo": "Change photo",
+  "camera_title": "Take a photo",
+  "camera_live": "Live camera preview",
+  "camera_starting": "Starting camera…",
+  "camera_take": "Capture photo",
+  "camera_switch": "Switch camera",
+  "camera_cancel": "Cancel",
+  "camera_use_file": "Choose a photo from my files instead",
+  "camera_denied": "Camera permission was declined. Allow camera access in your browser settings, or choose a photo from your files instead.",
+  "camera_unavailable": "No camera was found on this device. Please choose a photo from your files instead.",
+  "camera_insecure": "The camera can only be used over a secure connection (https, or localhost). Please choose a photo from your files instead.",
+  "camera_error": "The camera could not be started. Please choose a photo from your files instead.",
   "capture_step_crop": "2. Which crop is this?",
   "capture_step_location": "3. Location (optional)",
   "capture_location_help": "Your location helps officials spot disease outbreaks. It is optional and never shown with your name.",
@@ -45,13 +53,11 @@
   "capture_need_photo": "Please add a photo of the crop first.",
   "capture_need_crop": "Please choose which crop this is.",
   "capture_saved_offline": "You are offline. Your report has been saved on this device and will be sent automatically when you are back online.",
-
   "crop_tomato": "Tomato",
   "crop_potato": "Potato",
   "crop_corn": "Maize / Corn",
   "crop_rice": "Rice",
   "crop_other": "Other",
-
   "result_title": "Result",
   "result_detected": "Possible problem detected",
   "result_healthy": "No disease detected",
@@ -66,7 +72,6 @@
   "result_new_report": "Make another report",
   "result_failed": "We could not analyse this image",
   "result_failed_help": "Your report has been saved. You can retry the analysis later.",
-
   "history_title": "My reports",
   "history_empty": "You have not made any reports yet.",
   "history_pending_title": "Waiting to be sent",
@@ -75,20 +80,17 @@
   "history_syncing": "Sending…",
   "history_delete": "Delete",
   "history_view": "View result",
-
   "status_pending": "Waiting to send",
   "status_uploading": "Sending",
   "status_processing": "Analysing",
   "status_synced": "Sent",
   "status_failed": "Failed — will retry",
-
   "online": "Online",
   "offline": "Offline",
   "offline_banner": "You are offline. Reports will be saved on this device.",
   "pending_count_one": "{{count}} report waiting to be sent",
   "pending_count_other": "{{count}} reports waiting to be sent",
   "ai_unavailable": "AI analysis is temporarily unavailable. Reports are still being saved.",
-
   "dash_title": "Disease monitoring dashboard",
   "dash_subtitle": "Reports submitted by farmers. No personal information is shown.",
   "dash_total_reports": "Total reports",
@@ -120,7 +122,6 @@
   "dash_col_status": "Status",
   "dash_no_reports": "No reports match these filters.",
   "dash_source_note": "Map data © OpenStreetMap contributors",
-
   "disease_early_blight": "Early blight",
   "disease_late_blight": "Late blight",
   "disease_leaf_mold": "Leaf mould",
@@ -129,7 +130,6 @@
   "disease_leaf_blast": "Leaf blast",
   "disease_bacterial_leaf_blight": "Bacterial leaf blight",
   "disease_healthy": "Healthy",
-
   "error_generic": "Something went wrong. Please try again.",
   "error_network": "Could not reach the server. Your report was saved on this device.",
   "error_image": "That file could not be read as an image. Please choose a different photo."
