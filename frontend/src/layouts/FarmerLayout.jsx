@@ -73,13 +73,23 @@ export default function FarmerLayout() {
        * rather than snapping in all at once. Below `md` the grid collapses
        * to one column and the sidebar simply isn't rendered — the phone
        * experience is untouched, not shrunk.
+       *
+       * The main track is a fixed 42rem (matching the reading width the
+       * content itself wants), not `1fr` — `1fr` greedily fills whatever the
+       * 1500px shell has left over, which on a genuinely wide monitor is far
+       * more than 672px, and the form inside doesn't stretch to match, so a
+       * visible dead gap opened up between the form and the sidebar. With a
+       * fixed-width main track the grid's own footprint stops growing once
+       * both columns are comfortable, and `justify-center` centers that
+       * whole (form + sidebar) block as one unit — any extra width becomes
+       * ordinary, symmetric page margin instead of a gap between two boxes.
        */}
       <main
         id="main"
         className="flex-1 w-full max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-6 md:py-10 pb-28 md:pb-10"
       >
-        <div className="md:grid md:grid-cols-[minmax(0,1fr)_280px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] md:gap-8 lg:gap-12 md:items-start">
-          <div className="max-w-2xl">
+        <div className="md:grid md:justify-center md:grid-cols-[minmax(0,42rem)_280px] lg:grid-cols-[minmax(0,42rem)_340px] xl:grid-cols-[minmax(0,42rem)_380px] md:gap-8 lg:gap-12 md:items-start">
+          <div className="max-w-2xl w-full">
             <Outlet />
           </div>
 
