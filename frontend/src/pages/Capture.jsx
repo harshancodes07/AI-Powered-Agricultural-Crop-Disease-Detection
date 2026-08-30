@@ -200,7 +200,7 @@ export default function Capture() {
                 key={option}
                 className={`flex items-center gap-3 min-h-[3.25rem] px-4 rounded-xl border-2 cursor-pointer font-semibold ${
                   crop === option
-                    ? 'border-brand-700 bg-brand-50 text-brand-900'
+                    ? 'border-pachai-700 bg-pachai-50 text-pachai-900'
                     : 'border-slate-300 bg-white'
                 }`}
               >
@@ -210,7 +210,7 @@ export default function Capture() {
                   value={option}
                   checked={crop === option}
                   onChange={() => setCrop(option)}
-                  className="w-5 h-5 accent-brand-700"
+                  className="w-5 h-5 accent-pachai-700"
                 />
                 {t(`crop_${option}`)}
               </label>
@@ -236,7 +236,7 @@ export default function Capture() {
 
         <p role="status" aria-live="polite" className="mt-3 font-semibold">
           {locationState === 'granted' && (
-            <span className="text-brand-800">
+            <span className="text-pachai-800">
               <span aria-hidden="true">✓ </span>
               {t('capture_location_shared')}
             </span>

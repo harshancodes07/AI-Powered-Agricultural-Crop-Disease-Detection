@@ -8,7 +8,7 @@ const STYLES = {
   [STATUS.PENDING]: { icon: '⏳', className: 'bg-amber-100 text-amber-900 border-amber-300', key: 'status_pending' },
   [STATUS.UPLOADING]: { icon: '↑', className: 'bg-sky-100 text-sky-900 border-sky-300', key: 'status_uploading' },
   [STATUS.PROCESSING]: { icon: '⋯', className: 'bg-sky-100 text-sky-900 border-sky-300', key: 'status_processing' },
-  [STATUS.SYNCED]: { icon: '✓', className: 'bg-brand-100 text-brand-900 border-brand-300', key: 'status_synced' },
+  [STATUS.SYNCED]: { icon: '✓', className: 'bg-pachai-100 text-pachai-900 border-pachai-300', key: 'status_synced' },
   [STATUS.FAILED]: { icon: '!', className: 'bg-red-100 text-red-900 border-red-300', key: 'status_failed' }
 }
 

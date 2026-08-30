@@ -16,11 +16,11 @@ export default function DashboardFilters({ filters, onChange }) {
 
   return (
     <section className="card p-4" aria-labelledby="filters-heading">
-      <h2 id="filters-heading" className="font-bold mb-3">
+      <h2 id="filters-heading" className="eyebrow mb-4">
         {t('dash_filters')}
       </h2>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6">
         <div>
           <label htmlFor="filter-crop" className="field-label">{t('dash_filter_crop')}</label>
           <select id="filter-crop" className="input" value={filters.crop} onChange={set('crop')}>

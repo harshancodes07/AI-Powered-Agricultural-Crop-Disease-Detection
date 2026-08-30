@@ -19,7 +19,7 @@ const DEFAULT_ZOOM = 7
  */
 function markerIcon(disease) {
   const healthy = disease === 'healthy'
-  const colour = healthy ? '#15803d' : '#b45309'
+  const colour = healthy ? '#2E6B41' : '#A03E2A'  // pachai / semmann
   const letter = healthy ? '✓' : '!'
   return L.divIcon({
     className: '',
@@ -53,19 +53,22 @@ export default function DashboardMap() {
     <div className="space-y-6">
       <DashboardFilters filters={filters} onChange={setFilters} />
 
-      <section className="card p-5">
-        <h2 className="text-xl font-bold mb-1">{t('dash_map_title')}</h2>
-        <p className="text-slate-600 text-sm mb-4">{t('dash_subtitle')}</p>
+      <section className="card p-6">
+        <h2 className="eyebrow mb-1">{t('dash_map_title')}</h2>
+        <p className="text-mai-600 text-sm mb-4">{t('dash_subtitle')}</p>
 
         {error && (
           <p role="alert" className="mb-4 text-red-900 font-semibold">{error}</p>
         )}
 
         {points.length === 0 && !error && (
-          <p role="status" className="mb-4 text-slate-700">{t('dash_map_empty')}</p>
+          <p role="status" className="mb-4 text-mai-700">{t('dash_map_empty')}</p>
         )}
 
-        <div className="h-[65vh] min-h-[24rem] rounded-xl overflow-hidden border-2 border-slate-200">
+        {/* Tall enough to be the dominant thing on a desktop monitor — a map
+            capped at a phone-sized box is the single worst way to waste a
+            wide screen. */}
+        <div className="h-[74vh] min-h-[30rem] rounded-lg overflow-hidden border-2 border-arisi-300">
           <MapContainer
             center={center}
             zoom={points.length > 0 ? 9 : DEFAULT_ZOOM}
@@ -92,7 +95,7 @@ export default function DashboardMap() {
                       {t('result_confidence')}: {confidencePercent(point.confidence)}
                     </p>
                     {point.region && <p>{point.region}</p>}
-                    <p className="text-slate-600">
+                    <p className="text-mai-600">
                       {formatDate(point.created_at, i18n.language)}
                     </p>
                   </Popup>
@@ -102,7 +105,7 @@ export default function DashboardMap() {
           </MapContainer>
         </div>
 
-        <p className="text-sm text-slate-600 mt-3">{t('dash_source_note')}</p>
+        <p className="text-sm text-mai-600 mt-3">{t('dash_source_note')}</p>
       </section>
     </div>
   )

@@ -4,44 +4,184 @@
 
 @layer base {
   html {
-    /* Comfortable default for outdoor phone use. */
     -webkit-text-size-adjust: 100%;
+    /*
+     * Text size is a user setting, not a breakpoint. The A- / A / A+ control
+     * in the header rewrites this one variable and every rem in the app
+     * follows, which is what public-service sites are expected to offer.
+     */
+    font-size: calc(100% * var(--text-scale, 1));
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-arisi-100 text-mai-900 font-body antialiased;
   }
 
-  /* Focus must always be visible — many users navigate by keyboard or switch. */
+  h1, h2, h3, h4 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  /* Tamil sits lower and needs more line height than Latin at the same size. */
+  :lang(ta) {
+    line-height: 1.75;
+  }
+
+  /* Turmeric focus ring: the one colour that survives direct sunlight. */
   :focus-visible {
-    @apply outline-none ring-4 ring-brand-600 ring-offset-2 ring-offset-white rounded;
+    @apply outline-none ring-4 ring-manjal-500 ring-offset-2 ring-offset-arisi-100 rounded;
+  }
+
+  /* Data — report IDs, coordinates, counts — reads as a record, not prose. */
+  .tabular {
+    @apply font-data tabular-nums tracking-tight;
   }
 }
 
 @layer components {
-  /* Buttons are large enough to hit reliably with a thumb (min 48px tall). */
+  /* ---- Actions ------------------------------------------------------ */
+  /* 48px minimum: a thumb, in a field, possibly wet. */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 min-h-[3rem] px-5 py-3
-           rounded-xl font-semibold text-center transition
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply relative inline-flex items-center justify-center gap-2 min-h-[3rem] px-5 py-3
+           rounded-lg font-display font-semibold text-center
+           transition-all duration-150 active:translate-y-px
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:active:translate-y-0;
   }
   .btn-primary {
-    @apply btn bg-brand-700 text-white hover:bg-brand-800 active:bg-brand-900;
+    @apply btn bg-pachai-700 text-arisi-50 shadow-[0_2px_0_theme(colors.pachai.900)]
+           hover:bg-pachai-800 active:shadow-none;
   }
   .btn-secondary {
-    @apply btn bg-white text-brand-800 border-2 border-brand-700 hover:bg-brand-50;
+    @apply btn bg-arisi-50 text-pachai-800 border-2 border-pachai-700 hover:bg-pachai-50;
   }
   .btn-quiet {
-    @apply btn bg-slate-100 text-slate-800 hover:bg-slate-200;
+    @apply btn bg-arisi-200 text-mai-700 hover:bg-arisi-300;
   }
+  .btn-earth {
+    @apply btn bg-semmann-600 text-arisi-50 shadow-[0_2px_0_theme(colors.semmann.800)]
+           hover:bg-semmann-700 active:shadow-none;
+  }
+
+  /* ---- Surfaces ------------------------------------------------------ */
   .card {
-    @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
+    @apply bg-arisi-50 rounded-lg border border-arisi-300
+           shadow-[0_1px_2px_rgba(42,29,24,.06)];
   }
+  /* A card that carries a kolam corner — used for the one card per screen
+     that matters most, never for a grid of equals. */
+  .card-kolam {
+    @apply card relative overflow-hidden;
+  }
+  .card-kolam::after {
+    content: '';
+    @apply absolute -right-8 -bottom-8 w-32 h-32 opacity-[0.07] pointer-events-none;
+    background-image: var(--kolam-corner);
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  /* ---- Forms --------------------------------------------------------- */
   .field-label {
-    @apply block text-base font-semibold text-slate-800 mb-2;
+    @apply block font-display text-base font-semibold text-mai-900 mb-2;
   }
   .input {
-    @apply w-full min-h-[3rem] px-4 py-3 rounded-xl border-2 border-slate-300
-           bg-white text-slate-900 focus:border-brand-700;
+    @apply w-full min-h-[3rem] px-4 py-3 rounded-lg border-2 border-arisi-400
+           bg-arisi-50 text-mai-900 transition-colors
+           focus:border-pachai-700 focus:bg-white;
+  }
+
+  /* ---- Structure ----------------------------------------------------- */
+  /* Section eyebrow: a single pulli, then the label. The dot is the unit a
+     kolam is built from, so it marks structure rather than decorating it. */
+  .eyebrow {
+    @apply flex items-center gap-2 font-display text-sm font-semibold uppercase
+           tracking-[0.14em] text-semmann-600;
+  }
+  .eyebrow::before {
+    content: '';
+    @apply w-1.5 h-1.5 rounded-full bg-manjal-500 shrink-0;
+  }
+
+  /* The official band that sits above every masthead. */
+  .gov-strip {
+    @apply bg-kummayam-900 text-arisi-200 text-xs;
   }
 }
+
+@layer utilities {
+  /* The pulli grid: the dot lattice a kolam is laid out on, used as the
+     substrate of dark surfaces. Subtle enough to read as texture. */
+  .bg-pulli {
+    background-image: radial-gradient(circle, rgba(251, 246, 234, 0.22) 1.1px, transparent 1.2px);
+    background-size: 22px 22px;
+    background-position: 0 0;
+  }
+  .bg-pulli-earth {
+    background-image: radial-gradient(circle, rgba(160, 62, 42, 0.16) 1.1px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+
+  /* Temple-cornice edge: the stepped silhouette of a gopuram tier, as a
+     bottom border for the masthead. Drawn, not an image. */
+  .edge-cornice {
+    -webkit-mask-image: var(--cornice);
+    mask-image: var(--cornice);
+    -webkit-mask-size: 28px 100%;
+    mask-size: 28px 100%;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+  }
+}
+
+:root {
+  /* Inlined so they cost no request and stay themable from one place. */
+  --cornice: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 10' preserveAspectRatio='none'%3E%3Cpath d='M0 0h28v4H21v3h-4v3h-6V7H7V4H0z' fill='%23000'/%3E%3C/svg%3E");
+  --kolam-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 60C130 30 170 70 140 100c30 30-10 70-40 40-30 30-70-10-40-40C30 70 70 30 100 60z' fill='none' stroke='%232A1D18' stroke-width='7'/%3E%3C/svg%3E");
+}
+
+/* Motion is a courtesy, never a requirement. Everything below still works
+   with animation switched off — the kolam simply arrives already drawn. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * High-contrast mode, toggled from the header. Public-service sites are
+ * used on cracked screens in full sun; this drops the warm ground for
+ * black on white and thickens every border.
+ */
+[data-contrast='high'] {
+  --text-scale: var(--text-scale, 1);
+}
+[data-contrast='high'] body {
+  background: #fff;
+  color: #000;
+}
+[data-contrast='high'] .card,
+[data-contrast='high'] .card-kolam {
+  background: #fff;
+  border-color: #000;
+  border-width: 2px;
+  box-shadow: none;
+}
+[data-contrast='high'] .card-kolam::after { display: none; }
+[data-contrast='high'] .bg-pulli,
+[data-contrast='high'] .bg-pulli-earth { background-image: none; }
+[data-contrast='high'] .btn-primary,
+[data-contrast='high'] .btn-earth {
+  background: #000;
+  color: #fff;
+  box-shadow: none;
+}
+[data-contrast='high'] .btn-secondary,
+[data-contrast='high'] .btn-quiet {
+  background: #fff;
+  color: #000;
+  border: 2px solid #000;
+}
+[data-contrast='high'] .input { border-color: #000; background: #fff; }
+[data-contrast='high'] .eyebrow { color: #000; }

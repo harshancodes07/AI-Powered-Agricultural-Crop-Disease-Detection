@@ -100,7 +100,7 @@ export default function Result({ detail: detailProp }) {
 
       {/* Headline result. The icon and wording carry the meaning, not the colour. */}
       <section
-        className={`card p-5 ${healthy ? 'border-brand-300 bg-brand-50' : 'border-amber-300 bg-amber-50'}`}
+        className={`card p-5 ${healthy ? 'border-pachai-300 bg-pachai-50' : 'border-amber-300 bg-amber-50'}`}
       >
         <p className="font-semibold text-slate-700 mb-1">
           <span aria-hidden="true">{healthy ? '✓ ' : '⚠ '}</span>
@@ -207,7 +207,7 @@ export default function Result({ detail: detailProp }) {
           )}
 
           {treatment.immediate_actions?.length > 0 && (
-            <section className="card border-brand-300 p-5">
+            <section className="card border-pachai-300 p-5">
               <h2 className="text-xl font-bold mb-4">{t('result_actions')}</h2>
               <AdviceList items={treatment.immediate_actions} ordered />
             </section>

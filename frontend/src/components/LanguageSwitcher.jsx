@@ -19,7 +19,7 @@ export default function LanguageSwitcher() {
             aria-pressed={active}
             className={`min-h-[2.75rem] px-4 rounded-lg font-semibold border-2 transition ${
               active
-                ? 'bg-white text-brand-900 border-white'
+                ? 'bg-white text-pachai-900 border-white'
                 : 'bg-transparent text-white border-white/60 hover:bg-white/10'
             }`}
           >

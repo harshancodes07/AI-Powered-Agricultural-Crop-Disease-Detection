@@ -11,8 +11,8 @@ export default function AdviceList({ items, ordered = false }) {
             aria-hidden="true"
             className={
               ordered
-                ? 'shrink-0 w-7 h-7 rounded-full bg-brand-700 text-white font-bold grid place-items-center text-sm'
-                : 'shrink-0 text-brand-700 font-bold'
+                ? 'shrink-0 w-7 h-7 rounded-full bg-pachai-700 text-white font-bold grid place-items-center text-sm'
+                : 'shrink-0 text-pachai-700 font-bold'
             }
           >
             {ordered ? index + 1 : '•'}

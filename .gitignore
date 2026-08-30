@@ -31,3 +31,4 @@ postgres-data/
 .DS_Store
 .idea/
 .vscode/
+*.db-*

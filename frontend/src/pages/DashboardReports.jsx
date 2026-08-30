@@ -30,13 +30,13 @@ export default function DashboardReports() {
     <div className="space-y-6">
       <DashboardFilters filters={filters} onChange={setFilters} />
 
-      <section className="card p-5">
-        <h2 className="text-xl font-bold mb-4">{t('dash_reports_title')}</h2>
+      <section className="card p-6">
+        <h2 className="eyebrow mb-5">{t('dash_reports_title')}</h2>
 
         {error && <p role="alert" className="text-red-900 font-semibold">{error}</p>}
 
         {rows.length === 0 ? (
-          <p role="status" className="text-slate-700">{t('dash_no_reports')}</p>
+          <p role="status" className="text-mai-700">{t('dash_no_reports')}</p>
         ) : (
           /* Wide tables scroll inside their own container rather than pushing
              the whole page sideways. */
@@ -44,22 +44,22 @@ export default function DashboardReports() {
             <table className="w-full text-left border-collapse">
               <caption className="sr-only">{t('dash_reports_title')}</caption>
               <thead>
-                <tr className="border-b-2 border-slate-300">
-                  <th scope="col" className="py-2 pr-4 font-bold">{t('dash_col_id')}</th>
-                  <th scope="col" className="py-2 pr-4 font-bold">{t('dash_col_crop')}</th>
-                  <th scope="col" className="py-2 pr-4 font-bold">{t('dash_col_disease')}</th>
-                  <th scope="col" className="py-2 pr-4 font-bold">{t('dash_col_confidence')}</th>
-                  <th scope="col" className="py-2 pr-4 font-bold">{t('dash_col_region')}</th>
-                  <th scope="col" className="py-2 font-bold">{t('dash_col_date')}</th>
+                <tr className="border-b-2 border-arisi-300">
+                  <th scope="col" className="py-2 pr-4 font-display font-bold text-mai-700">{t('dash_col_id')}</th>
+                  <th scope="col" className="py-2 pr-4 font-display font-bold text-mai-700">{t('dash_col_crop')}</th>
+                  <th scope="col" className="py-2 pr-4 font-display font-bold text-mai-700">{t('dash_col_disease')}</th>
+                  <th scope="col" className="py-2 pr-4 font-display font-bold text-mai-700">{t('dash_col_confidence')}</th>
+                  <th scope="col" className="py-2 pr-4 font-display font-bold text-mai-700">{t('dash_col_region')}</th>
+                  <th scope="col" className="py-2 font-display font-bold text-mai-700">{t('dash_col_date')}</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((row) => (
-                  <tr key={row.id} className="border-b border-slate-200">
-                    <td className="py-2.5 pr-4 tabular-nums">{row.id}</td>
+                  <tr key={row.id} className="border-b border-arisi-200 hover:bg-arisi-100/60">
+                    <td className="py-2.5 pr-4 tabular">{row.id}</td>
                     <td className="py-2.5 pr-4">{cropLabel(t, row.crop)}</td>
                     <td className="py-2.5 pr-4 font-semibold">{diseaseLabel(t, row.disease)}</td>
-                    <td className="py-2.5 pr-4 tabular-nums">{confidencePercent(row.confidence)}</td>
+                    <td className="py-2.5 pr-4 tabular">{confidencePercent(row.confidence)}</td>
                     <td className="py-2.5 pr-4">{row.region || '—'}</td>
                     <td className="py-2.5 whitespace-nowrap">
                       {formatDate(row.created_at, i18n.language)}

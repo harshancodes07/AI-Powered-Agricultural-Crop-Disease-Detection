@@ -31,13 +31,13 @@ export default function DashboardHome() {
       </p>
     )
   }
-  if (!summary) return <p role="status" className="card p-6">{t('loading')}</p>
+  if (!summary) return <p role="status" className="card p-6 text-mai-600">{t('loading')}</p>
 
   return (
     <div className="space-y-6">
       <DashboardFilters filters={filters} onChange={setFilters} />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-6">
         <KpiCard label={t('dash_total_reports')} value={summary.total_reports} />
         <KpiCard label={t('dash_affected_areas')} value={summary.affected_areas} />
         <KpiCard
@@ -53,16 +53,20 @@ export default function DashboardHome() {
               : undefined
           }
         />
-        <KpiCard label={t('dash_high_risk')} value={summary.high_risk_areas} />
+        <KpiCard
+          label={t('dash_high_risk')}
+          value={summary.high_risk_areas}
+          tone={summary.high_risk_areas > 0 ? 'alert' : 'default'}
+        />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard label={t('dash_healthy')} value={summary.healthy_reports} />
         <KpiCard label={t('dash_diseased')} value={summary.diseased_reports} />
       </div>
 
-      <section className="card p-5">
-        <h2 className="text-xl font-bold mb-4">{t('dash_by_disease')}</h2>
+      <section className="card p-6">
+        <h2 className="eyebrow mb-5">{t('dash_by_disease')}</h2>
         <BarChart
           emptyLabel={t('dash_no_reports')}
           data={diseases.map((d) => ({

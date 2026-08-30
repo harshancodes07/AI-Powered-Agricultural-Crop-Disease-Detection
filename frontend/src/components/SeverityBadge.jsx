@@ -6,7 +6,7 @@ const STYLES = {
   high: { icon: '⚠', className: 'bg-red-100 text-red-900 border-red-400' },
   moderate: { icon: '!', className: 'bg-amber-100 text-amber-900 border-amber-400' },
   low: { icon: '👁', className: 'bg-sky-100 text-sky-900 border-sky-400' },
-  none: { icon: '✓', className: 'bg-brand-100 text-brand-900 border-brand-400' }
+  none: { icon: '✓', className: 'bg-pachai-100 text-pachai-900 border-pachai-300' }
 }
 
 export default function SeverityBadge({ severity }) {

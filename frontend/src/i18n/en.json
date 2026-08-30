@@ -151,5 +151,17 @@
   "disease_healthy": "Healthy",
   "error_generic": "Something went wrong. Please try again.",
   "error_network": "Could not reach the server. Your report was saved on this device.",
-  "error_image": "That file could not be read as an image. Please choose a different photo."
+  "error_image": "That file could not be read as an image. Please choose a different photo.",
+  "app_name_ta": "பயிர்க்காப்பு",
+  "dept_name": "Crop Health & Advisory Portal",
+  "gov_strip": "A digital agriculture initiative · Government of Tamil Nadu (demo)",
+  "a11y_text_size": "Text size",
+  "a11y_text_smaller": "Decrease text size",
+  "a11y_text_reset": "Reset text size",
+  "a11y_text_larger": "Increase text size",
+  "a11y_contrast": "High contrast",
+  "advisory_label": "Advisory",
+  "advisory_1": "Water tomato and potato at the base, never overhead — wet leaves invite blight.",
+  "advisory_2": "Check the undersides of leaves weekly; most diseases are visible there first.",
+  "advisory_3": "Clear and destroy crop debris after harvest — it is where most fungal disease overwinters."
 }
