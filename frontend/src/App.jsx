@@ -9,6 +9,7 @@ import DashboardMap from './pages/DashboardMap'
 import DashboardReports from './pages/DashboardReports'
 import History from './pages/History'
 import Home from './pages/Home'
+import Landing from './pages/Landing'
 import ReportDetail from './pages/ReportDetail'
 import Result from './pages/Result'
 
@@ -20,7 +21,7 @@ import Result from './pages/Result'
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/farmer" replace />} />
+      <Route path="/" element={<Landing />} />
 
       <Route path="/farmer" element={<FarmerLayout />}>
         <Route index element={<Home />} />

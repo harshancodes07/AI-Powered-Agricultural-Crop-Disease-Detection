@@ -7,6 +7,16 @@
     <meta name="description" content="Detect crop diseases from a photo and get verified treatment advice in your language." />
     <link rel="icon" type="image/svg+xml" href="/leaf.svg" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- The type system referenced throughout tailwind.config.js was never
+         actually loaded — every font-display/font-body class was silently
+         falling back to system-ui. Loaded here, once, for the whole app. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anek+Tamil:wght@500;600;700;800&family=Noto+Sans+Tamil:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
     <title>CropCare — Crop Disease Detection</title>
   </head>
   <body>

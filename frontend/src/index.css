@@ -108,6 +108,25 @@
 }
 
 @layer utilities {
+  /* ---- Scroll reveal (Landing page) ---------------------------------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(1.75rem);
+    transition: opacity 0.9s cubic-bezier(0.2, 0.7, 0.3, 1),
+      transform 0.9s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+
   /* The pulli grid: the dot lattice a kolam is laid out on, used as the
      substrate of dark surfaces. Subtle enough to read as texture. */
   .bg-pulli {
@@ -185,3 +204,69 @@
 }
 [data-contrast='high'] .input { border-color: #000; background: #fff; }
 [data-contrast='high'] .eyebrow { color: #000; }
+
+/*
+ * Landing page only, from here down. Scoped under [data-page='landing'] on
+ * the page root so nothing here can leak into the working app screens.
+ */
+[data-page='landing'] {
+  /* A slow drift for the pulli field behind the hero — dust settling, not
+     confetti. Three staggered layers read as depth rather than one flat
+     pattern moving in lockstep. */
+  --drift-a: 46s;
+  --drift-b: 63s;
+  --drift-c: 38s;
+}
+
+@keyframes pulliDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-64px, -96px, 0); }
+}
+
+[data-page='landing'] .hero-field {
+  background-image: var(--kolam-corner);
+  background-repeat: repeat;
+  background-size: 340px 340px;
+  animation: pulliDrift var(--drift-a) linear infinite;
+  opacity: 0.05;
+}
+[data-page='landing'] .hero-field.field-b {
+  background-size: 220px 220px;
+  animation-duration: var(--drift-b);
+  animation-direction: reverse;
+  opacity: 0.04;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-page='landing'] .hero-field { animation: none; }
+}
+
+/* The thread: a single unbroken line running the spine of the four story
+   steps, exactly as a kolam loop is drawn around its dots without lifting
+   the hand. Each dot fills in only once its section has told itself. */
+[data-page='landing'] .thread-line {
+  background: linear-gradient(
+    to bottom,
+    theme('colors.manjal.500') 0%,
+    theme('colors.manjal.500') 0%,
+    theme('colors.semmann.200') 0%,
+    theme('colors.semmann.200') 100%
+  );
+}
+[data-page='landing'] .thread-dot {
+  background: theme('colors.arisi.50');
+  border-color: theme('colors.semmann.200');
+  transition: background-color 0.6s ease, border-color 0.6s ease, transform 0.6s ease;
+}
+[data-page='landing'] .reveal.is-visible .thread-dot {
+  background: theme('colors.manjal.500');
+  border-color: theme('colors.manjal.500');
+  transform: translateX(-50%) scale(1.2);
+}
+
+/* Organic section seams: a hand-drawn horizon rather than a hard edge. */
+[data-page='landing'] .seam {
+  display: block;
+  width: 100%;
+  height: clamp(3rem, 8vw, 6rem);
+}
