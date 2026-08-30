@@ -24,9 +24,8 @@ export default function FarmerSidebar() {
   if (pathname === '/farmer') return <HomePanel t={t} />
   if (pathname.startsWith('/farmer/capture')) return <CapturePanel t={t} />
   if (pathname.startsWith('/farmer/history')) return <HistoryPanel t={t} />
-  if (pathname.startsWith('/farmer/result') || pathname.startsWith('/farmer/report')) {
-    return <ResultPanel t={t} />
-  }
+  // Result pages build their own full-width layout with this content moved
+  // inline (see pages/Result.jsx), so there is no sidebar to fill here.
   return null
 }
 
@@ -129,17 +128,3 @@ function HistoryPanel({ t }) {
   )
 }
 
-function ResultPanel({ t }) {
-  return (
-    <Panel>
-      <section className="card p-6">
-        <p className="eyebrow mb-4">{t('sidebar_result_title')}</p>
-        <div className="space-y-5 text-sm text-mai-700 leading-relaxed">
-          <p>{t('sidebar_result_confidence')}</p>
-          <p>{t('sidebar_result_alternatives')}</p>
-          <p>{t('sidebar_result_expert')}</p>
-        </div>
-      </section>
-    </Panel>
-  )
-}

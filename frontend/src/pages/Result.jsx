@@ -3,47 +3,58 @@ import { useTranslation } from 'react-i18next'
 import { resolveAssetUrl } from '../services/api'
 
 import AdviceList from '../components/AdviceList'
+import ConfidenceRing from '../components/ConfidenceRing'
 import SeverityBadge, { SeverityHelp } from '../components/SeverityBadge'
 import {
   LOW_CONFIDENCE_THRESHOLD,
   confidencePercent,
   cropLabel,
-  diseaseLabel
+  diseaseLabel,
+  formatDate
 } from '../utils/format'
+
+const RING_TONE = { high: 'semmann', moderate: 'manjal', low: 'pachai', none: 'pachai' }
 
 /**
  * Shows one prediction and its verified treatment.
  *
+ * The image and the diagnosis are laid out as one connected unit — a two-up
+ * grid on a wide screen, stacked on a phone — because they answer the same
+ * question ("what am I looking at") and reading them as two unrelated boxes
+ * was the whole complaint. Everything below that follows the order a farmer
+ * actually wants: what it means, what else it could be, what to do now,
+ * what to do later.
+ *
  * `detail` normally arrives as router state straight after an upload, but it
  * can also be passed as a prop so a stored report renders identically.
- *
- * Laid out as a small number of purposeful sections rather than one card per
- * field: a single diagnosis card carries everything about *what* was found
- * (image, name, confidence, severity, alternatives, the uncertainty note),
- * then the treatment content groups into "understanding it", "do this now"
- * and "looking ahead" — the order a farmer actually reads in, not the order
- * the API happens to return fields.
  */
 export default function Result({ detail: detailProp }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const location = useLocation()
   const detail = detailProp ?? location.state?.detail
 
-  // Reached directly (e.g. a refresh) with nothing to show.
   if (!detail) return <Navigate to="/farmer/capture" replace />
 
   const { report, prediction, treatment } = detail
-  // The model was never trained on this crop. Anything it "predicts" here is
-  // about some other plant entirely, so we must not show it as a diagnosis.
   const cropUnsupported = prediction?.crop_supported === false
   const healthy = prediction?.disease === 'healthy'
   const lowConfidence =
     prediction != null && prediction.confidence < LOW_CONFIDENCE_THRESHOLD
 
-  // The ML service was unreachable, but the report itself was kept.
+  const BackLink = () => (
+    <Link
+      to="/farmer/history"
+      className="inline-flex items-center gap-1.5 text-sm font-semibold text-mai-700 hover:text-mai-900"
+    >
+      <span aria-hidden="true">←</span>
+      {t('result_back')}
+    </Link>
+  )
+
   if (!prediction) {
     return (
-      <div className="space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <BackLink />
         <h1 className="text-2xl font-display font-bold text-mai-900">{t('result_title')}</h1>
         <section className="card border-manjal-300 bg-manjal-100/40 p-5">
           <h2 className="text-lg font-display font-bold text-mai-900 mb-2">
@@ -59,11 +70,10 @@ export default function Result({ detail: detailProp }) {
     )
   }
 
-  // Crop outside the model's training set: show the honest refusal and nothing
-  // that could be mistaken for a diagnosis.
   if (cropUnsupported) {
     return (
-      <div className="space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <BackLink />
         <h1 className="text-2xl font-display font-bold text-mai-900">{t('result_title')}</h1>
 
         {report.image_url && (
@@ -94,77 +104,92 @@ export default function Result({ detail: detailProp }) {
     )
   }
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-display font-bold text-mai-900">{t('result_title')}</h1>
+  const severity = treatment?.severity
+  const ringTone = RING_TONE[severity] || 'pachai'
 
-      {/* ---- The diagnosis: one card, everything about "what was found" --- */}
-      <section className="card-kolam overflow-hidden">
+  return (
+    <div className="max-w-[1180px] mx-auto space-y-6 md:space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <BackLink />
+        <p className="tabular text-sm text-mai-500">
+          {t('result_report_id')} #{report.id} · {formatDate(report.created_at, i18n.language)}
+        </p>
+      </div>
+
+      <h1 className="text-2xl md:text-3xl font-display font-bold text-mai-900">
+        {t('result_title')}
+      </h1>
+
+      {/* ---- The hero: image and diagnosis as one connected unit --------- */}
+      <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-stretch">
         {report.image_url && (
-          <img
-            src={resolveAssetUrl(report.image_url)}
-            alt=""
-            className="w-full max-h-56 object-contain bg-white border-b border-arisi-200"
-          />
+          <div className="relative card-kolam overflow-hidden min-h-[16rem]">
+            <img
+              src={resolveAssetUrl(report.image_url)}
+              alt=""
+              className="w-full h-full min-h-[16rem] max-h-[28rem] object-cover"
+            />
+            <a
+              href={resolveAssetUrl(report.image_url)}
+              target="_blank"
+              rel="noreferrer"
+              className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-mai-900/80 text-arisi-50 text-xs font-semibold backdrop-blur-sm hover:bg-mai-900"
+            >
+              <span aria-hidden="true">⤢</span>
+              {t('result_view_full')}
+            </a>
+          </div>
         )}
 
-        <div className="p-5">
+        <div className="card p-6 flex flex-col justify-center">
           <div className="flex flex-wrap items-center gap-2 mb-3">
             <p className="font-semibold text-mai-700">
               <span aria-hidden="true">{healthy ? '✓ ' : '⚠ '}</span>
               {healthy ? t('result_healthy') : t('result_detected')}
             </p>
-            {!healthy && <SeverityBadge severity={treatment?.severity} />}
+            {!healthy && <SeverityBadge severity={severity} />}
           </div>
 
-          <h2 className="text-2xl font-display font-bold text-mai-900 mb-1">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-mai-900 mb-1">
             {healthy ? cropLabel(t, prediction.crop) : diseaseLabel(t, prediction.disease)}
           </h2>
 
-          {!healthy && <SeverityHelp severity={treatment?.severity} />}
+          {!healthy && <SeverityHelp severity={severity} />}
 
-          <p className="tabular text-sm text-mai-600 mt-3">
-            {cropLabel(t, prediction.crop)} · {t('result_confidence')}{' '}
-            {confidencePercent(prediction.confidence)} · {prediction.model_version}
-          </p>
-
-          {/* Runner-up diagnoses: kept compact and inline, since they are
-              supporting evidence, not a second diagnosis. */}
-          {prediction.alternatives?.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-arisi-200">
-              <p className="text-xs font-display font-semibold uppercase tracking-wide text-mai-500 mb-2">
-                {t('result_alternatives')}
+          <div className="flex items-center gap-4 mt-5 pt-5 border-t border-arisi-200">
+            <ConfidenceRing value={prediction.confidence} tone={healthy ? 'pachai' : ringTone} />
+            <div className="min-w-0">
+              <p className="text-xs font-display font-semibold uppercase tracking-wide text-mai-500">
+                {t('result_confidence')}
               </p>
-              <ul className="flex flex-wrap gap-2">
-                {prediction.alternatives.map((alt) => (
-                  <li
-                    key={`${alt.crop}-${alt.disease}`}
-                    className="tabular inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-arisi-100 border border-arisi-300 text-xs font-semibold text-mai-700"
-                  >
-                    {diseaseLabel(t, alt.disease)}
-                    <span className="text-mai-500">{confidencePercent(alt.confidence)}</span>
-                  </li>
-                ))}
-              </ul>
-              <p className="text-xs text-mai-500 mt-2">{t('result_alternatives_help')}</p>
+              <p className="text-sm text-mai-700 mt-0.5">
+                {cropLabel(t, prediction.crop)} · {prediction.model_version}
+              </p>
+              {lowConfidence && (
+                <p className="text-sm font-semibold text-manjal-700 mt-1">
+                  {t('result_low_confidence')}
+                </p>
+              )}
             </div>
-          )}
-
-          {/* Uncertainty is stated plainly, every time (CLAUDE.md section 13) —
-              a footer strip within the same card, not a card of its own. */}
-          <div className="mt-4 pt-4 border-t border-arisi-200 text-sm text-mai-700">
-            <p>
-              <span aria-hidden="true">ℹ </span>
-              {t('result_uncertainty')}
-            </p>
-            {lowConfidence && (
-              <p className="mt-1.5 font-semibold text-manjal-700">{t('result_low_confidence')}</p>
-            )}
           </div>
         </div>
+      </div>
+
+      {/* ---- What this result means — the explainer, inline, not a
+              detached sidebar card ------------------------------------- */}
+      <section className="card p-6">
+        <h2 className="eyebrow mb-4">{t('result_understanding_title')}</h2>
+        <div className="grid sm:grid-cols-3 gap-6 text-sm text-mai-700 leading-relaxed">
+          <p>{t('sidebar_result_confidence')}</p>
+          <p>{t('sidebar_result_alternatives')}</p>
+          <p>{t('sidebar_result_expert')}</p>
+        </div>
+        <p className="text-xs text-mai-500 mt-4 pt-4 border-t border-arisi-200">
+          <span aria-hidden="true">ℹ </span>
+          {t('result_uncertainty')}
+        </p>
       </section>
 
-      {/* ---- No verified treatment: say so, plainly, and stop there. ------ */}
       {treatment && !treatment.verified && (
         <section className="card border-manjal-300 bg-manjal-100/40 p-5">
           <h2 className="text-xl font-display font-bold mb-2 text-mai-900">
@@ -178,11 +203,55 @@ export default function Result({ detail: detailProp }) {
         </section>
       )}
 
-      {/* ---- Verified guidance, grouped by what a farmer does with it ----- */}
       {treatment && treatment.verified && (
         <>
+          {/* ---- Uncertainty (alternatives) beside action — two sides of
+                  the same coin: not sure exactly what it is, but here's what
+                  to do regardless. ---------------------------------------- */}
+          {(prediction.alternatives?.length > 0 || treatment.immediate_actions?.length > 0) && (
+            <div className="grid md:grid-cols-2 gap-5 md:gap-8 items-start">
+              {prediction.alternatives?.length > 0 && (
+                <section className="card p-6">
+                  <h2 className="text-lg font-display font-bold text-mai-900 mb-1">
+                    {t('result_alternatives')}
+                  </h2>
+                  <p className="text-sm text-mai-500 mb-4">{t('result_alternatives_help')}</p>
+                  <ul className="space-y-3">
+                    {prediction.alternatives.map((alt) => (
+                      <li key={`${alt.crop}-${alt.disease}`}>
+                        <div className="flex justify-between text-sm font-semibold mb-1 gap-3">
+                          <span className="min-w-0 truncate text-mai-800">
+                            {diseaseLabel(t, alt.disease)}
+                          </span>
+                          <span className="tabular shrink-0 text-mai-600">
+                            {confidencePercent(alt.confidence)}
+                          </span>
+                        </div>
+                        <div className="h-2 rounded-full bg-arisi-200 overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-arisi-400"
+                            style={{ width: `${Math.max(alt.confidence * 100, 2)}%` }}
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {treatment.immediate_actions?.length > 0 && (
+                <section className="card border-pachai-300 p-6">
+                  <h2 className="text-lg font-display font-bold mb-4 text-mai-900">
+                    {t('result_actions')}
+                  </h2>
+                  <AdviceList items={treatment.immediate_actions} ordered />
+                </section>
+              )}
+            </div>
+          )}
+
           {(treatment.summary || treatment.symptoms || treatment.cause) && (
-            <section className="card p-5 space-y-4">
+            <section className="card p-6 space-y-4">
               {treatment.summary && (
                 <p className="text-lg leading-relaxed text-mai-900">{treatment.summary}</p>
               )}
@@ -204,17 +273,8 @@ export default function Result({ detail: detailProp }) {
             </section>
           )}
 
-          {treatment.immediate_actions?.length > 0 && (
-            <section className="card border-pachai-300 p-5">
-              <h2 className="text-xl font-display font-bold mb-4 text-mai-900">
-                {t('result_actions')}
-              </h2>
-              <AdviceList items={treatment.immediate_actions} ordered />
-            </section>
-          )}
-
           {(treatment.prevention?.length > 0 || treatment.expert_note || treatment.source) && (
-            <section className="card p-5 space-y-4">
+            <section className="card p-6 space-y-4">
               {treatment.prevention?.length > 0 && (
                 <div>
                   <h2 className="eyebrow mb-3">{t('result_prevention')}</h2>
@@ -240,11 +300,11 @@ export default function Result({ detail: detailProp }) {
         </>
       )}
 
-      <div className="space-y-3">
-        <Link to="/farmer/capture" className="btn-primary w-full">
+      <div className="flex flex-wrap gap-3">
+        <Link to="/farmer/capture" className="btn-primary flex-1 min-w-[12rem]">
           {t('result_new_report')}
         </Link>
-        <Link to="/farmer/history" className="btn-secondary w-full">
+        <Link to="/farmer/history" className="btn-secondary flex-1 min-w-[12rem]">
           {t('nav_history')}
         </Link>
       </div>

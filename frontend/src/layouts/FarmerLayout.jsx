@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import AdvisoryTicker from '../components/AdvisoryTicker'
@@ -28,6 +28,16 @@ const TABS = [
  */
 export default function FarmerLayout() {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
+
+  // The result screen builds its own two-column composition (image beside
+  // diagnosis) and needs the full main column to do that well — the
+  // standard capped-width-plus-context-sidebar pattern that suits a form or
+  // a list left it building that composition inside a 672px column, which
+  // is what made the image+diagnosis pairing feel cramped rather than
+  // connected. Its "how to read this" content moved inline for the same
+  // reason a detached sidebar card was the original complaint.
+  const isResultPage = pathname.startsWith('/farmer/result') || pathname.startsWith('/farmer/report')
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -88,15 +98,19 @@ export default function FarmerLayout() {
         id="main"
         className="flex-1 w-full max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-6 md:py-10 pb-28 md:pb-10"
       >
-        <div className="md:grid md:justify-center md:grid-cols-[minmax(0,42rem)_280px] lg:grid-cols-[minmax(0,42rem)_340px] xl:grid-cols-[minmax(0,42rem)_380px] md:gap-8 lg:gap-12 md:items-start">
-          <div className="max-w-2xl w-full">
-            <Outlet />
-          </div>
+        {isResultPage ? (
+          <Outlet />
+        ) : (
+          <div className="md:grid md:justify-center md:grid-cols-[minmax(0,42rem)_280px] lg:grid-cols-[minmax(0,42rem)_340px] xl:grid-cols-[minmax(0,42rem)_380px] md:gap-8 lg:gap-12 md:items-start">
+            <div className="max-w-2xl w-full">
+              <Outlet />
+            </div>
 
-          <aside aria-label={t('nav_home')} className="hidden md:block md:sticky md:top-8">
-            <FarmerSidebar />
-          </aside>
-        </div>
+            <aside aria-label={t('nav_home')} className="hidden md:block md:sticky md:top-8">
+              <FarmerSidebar />
+            </aside>
+          </div>
+        )}
       </main>
 
       <nav

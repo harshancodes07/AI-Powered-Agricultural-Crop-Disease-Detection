@@ -215,5 +215,9 @@
   "sidebar_result_title": "Reading this result",
   "sidebar_result_confidence": "Confidence is how sure the model is — not a certainty score for the disease itself. Below about 80%, treat the result as a lead to check, not a verdict.",
   "sidebar_result_alternatives": "Similar-looking diseases are listed as alternatives on purpose. Several plant diseases genuinely look alike in a single photograph.",
-  "sidebar_result_expert": "When in doubt, the source note tells you where the advice came from — and when to bring in a local expert instead."
+  "sidebar_result_expert": "When in doubt, the source note tells you where the advice came from — and when to bring in a local expert instead.",
+  "result_back": "Back to reports",
+  "result_view_full": "View full size",
+  "result_report_id": "Report",
+  "result_understanding_title": "What this result means"
 }
