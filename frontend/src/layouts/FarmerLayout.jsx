@@ -36,7 +36,7 @@ export default function FarmerLayout() {
       </a>
 
       <GovStrip />
-      <Masthead to="/farmer" />
+      <Masthead to="/" />
       <AdvisoryTicker />
 
       <nav aria-label={t('nav_home')} className="hidden lg:block bg-kummayam-900 border-t border-arisi-100/10">
