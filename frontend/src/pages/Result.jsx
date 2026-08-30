@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { resolveAssetUrl } from '../services/api'
 
 import AdviceList from '../components/AdviceList'
 import SeverityBadge, { SeverityHelp } from '../components/SeverityBadge'
@@ -60,7 +61,7 @@ export default function Result({ detail: detailProp }) {
 
         {report.image_url && (
           <img
-            src={report.image_url}
+            src={resolveAssetUrl(report.image_url)}
             alt=""
             className="w-full max-h-56 object-contain rounded-2xl border-2 border-slate-200 bg-white"
           />
@@ -92,7 +93,7 @@ export default function Result({ detail: detailProp }) {
 
       {report.image_url && (
         <img
-          src={report.image_url}
+          src={resolveAssetUrl(report.image_url)}
           alt=""
           className="w-full max-h-56 object-contain rounded-2xl border-2 border-slate-200 bg-white"
         />

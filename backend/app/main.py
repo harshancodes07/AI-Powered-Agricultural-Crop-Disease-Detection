@@ -54,7 +54,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):\d+",
+    # Local dev + LAN testing, plus a Vercel-hosted frontend pointed at
+    # this backend (see frontend VITE_API_URL / DEPLOY.md). *.vercel.app
+    # covers both the stable project domain and per-deploy preview URLs.
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):\d+|https://[a-zA-Z0-9-]+\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

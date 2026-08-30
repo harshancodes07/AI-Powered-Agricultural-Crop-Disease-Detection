@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { resolveAssetUrl } from '../services/api'
 
 import StatusBadge from '../components/StatusBadge'
 import { all, remove } from '../offline/queue'
@@ -64,7 +65,7 @@ export default function History() {
               <div className="flex items-start gap-3">
                 {record.imageUrl && (
                   <img
-                    src={record.imageUrl}
+                    src={resolveAssetUrl(record.imageUrl)}
                     alt=""
                     className="w-16 h-16 rounded-lg object-cover border border-slate-200 shrink-0"
                   />
