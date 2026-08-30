@@ -27,6 +27,14 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // Without these, a new deploy's service worker installs but sits
+        // "waiting" until every open tab of the old version is closed —
+        // registerType: 'autoUpdate' alone does not skip that. In practice
+        // that meant a tab left open across a deploy could keep running old,
+        // possibly-broken JS indefinitely. skipWaiting + clientsClaim make a
+        // new deploy take over on the very next load instead.
+        skipWaiting: true,
+        clientsClaim: true,
         // Cache the app shell so the app opens with no connection at all.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: 'index.html',
