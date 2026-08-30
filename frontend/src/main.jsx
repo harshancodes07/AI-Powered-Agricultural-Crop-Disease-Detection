@@ -8,15 +8,19 @@ import './i18n'
 import './index.css'
 import { startAutoSync } from './offline/sync'
 
-// A raw backslash (or other characters invalid in a URL path) reaching the
-// browser bar — from a link mangled by a chat app's auto-linkifier, a stray
-// paste, whatever — crashes react-router's own location parsing before a
-// single component mounts, leaving a blank page with no way back in.
-// Normalising here, before BrowserRouter ever reads the URL, means a bad
-// link degrades to "opens the app" instead of "shows nothing".
-if (/\\/.test(window.location.pathname)) {
-  const cleaned = window.location.pathname.replace(/\\+/g, '/').replace(/\/{2,}/g, '/')
-  window.history.replaceState(null, '', cleaned + window.location.search + window.location.hash)
+// A backslash reaching the browser bar — from a link mangled by whatever
+// it was shared through — crashes react-router's own location parsing
+// before a single component mounts. The first fix here only checked for a
+// literal backslash character, but browsers do NOT decode a %5C escape in
+// location.pathname on their own: window.location.pathname for .../%5C is
+// the literal four characters "/%5C", not an actual backslash byte. Match
+// both the raw and percent-encoded forms (either case), so a bad link
+// degrades to "opens the app" instead of "shows an error screen".
+if (/\\|%5c/i.test(window.location.pathname)) {
+  const cleaned = window.location.pathname
+    .replace(/\\|%5c/gi, '/')
+    .replace(/\/{2,}/g, '/')
+  window.history.replaceState(null, '', (cleaned || '/') + window.location.search + window.location.hash)
 }
 
 // Watches for connectivity returning and drains the offline report queue.
