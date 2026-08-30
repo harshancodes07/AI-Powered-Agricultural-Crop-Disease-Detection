@@ -26,6 +26,25 @@ if (/\\|%5c/i.test(window.location.pathname)) {
 // Watches for connectivity returning and drains the offline report queue.
 startAutoSync()
 
+// The auto-injected service-worker registration script only calls
+// navigator.serviceWorker.register() once — it never checks for updates or
+// reloads the page when a newer version takes over. Combined with skipWaiting
+// + clientsClaim on the worker side (see vite.config.js), a new deploy DOES
+// activate and start controlling the page automatically, but without this
+// listener nothing ever tells an already-open tab to actually reload and run
+// the new code — it silently keeps executing whatever was in memory when the
+// tab was opened, indefinitely, regardless of how many times the person hits
+// refresh. `controllerchange` fires exactly when that handover happens, so
+// reload once, right then, and they see the update without doing anything.
+if ('serviceWorker' in navigator) {
+  let reloading = false
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return // a browser can fire this more than once
+    reloading = true
+    window.location.reload()
+  })
+}
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
