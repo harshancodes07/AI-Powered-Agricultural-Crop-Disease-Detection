@@ -17,11 +17,14 @@ const TABS = [
  * One screen, two navigation patterns, chosen by the same TABS list.
  *
  * On a phone this is a fixed bottom bar — the one place a thumb rests
- * without being asked to. On a desk monitor a bar pinned to the bottom of
- * a 1080px-tall window reads as a phone shape left where it was built,
- * so from `lg` up navigation moves into a header band instead, matching
- * the tab row the government dashboard already uses — one visual grammar
- * for both halves of the platform.
+ * without being asked to. From `md` (768px) up — a small laptop window, a
+ * tablet in landscape, a half-maximised browser, not just a large monitor —
+ * navigation moves into a header band instead, matching the tab row the
+ * government dashboard already uses. The switch point used to be `lg`
+ * (1024px), which left a genuinely wide range of real window sizes with
+ * nothing but empty margin either side of a phone-width card: the content
+ * column was already capped narrow, but the sidebar that was meant to use
+ * that space hadn't switched on yet.
  */
 export default function FarmerLayout() {
   const { t } = useTranslation()
@@ -39,7 +42,7 @@ export default function FarmerLayout() {
       <Masthead to="/" />
       <AdvisoryTicker />
 
-      <nav aria-label={t('nav_home')} className="hidden lg:block bg-kummayam-900 border-t border-arisi-100/10">
+      <nav aria-label={t('nav_home')} className="hidden md:block bg-kummayam-900 border-t border-arisi-100/10">
         <ul className="max-w-[1500px] mx-auto px-10 flex gap-1">
           {TABS.map((tab) => (
             <li key={tab.to}>
@@ -65,21 +68,22 @@ export default function FarmerLayout() {
 
       {/*
        * The workspace: a wide shell (matching the masthead above it) holding
-       * a comfortable-width primary column plus, from `lg` up, a sticky
-       * context panel. Below `lg` the grid collapses to one column and the
-       * sidebar simply isn't rendered — the phone experience is untouched,
-       * not shrunk.
+       * a comfortable-width primary column plus, from `md` up, a sticky
+       * context panel that grows with the window (280px -> 340px -> 380px)
+       * rather than snapping in all at once. Below `md` the grid collapses
+       * to one column and the sidebar simply isn't rendered — the phone
+       * experience is untouched, not shrunk.
        */}
       <main
         id="main"
-        className="flex-1 w-full max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-10 pb-28 lg:pb-10"
+        className="flex-1 w-full max-w-[1500px] mx-auto px-4 sm:px-6 md:px-8 lg:px-10 py-6 md:py-10 pb-28 md:pb-10"
       >
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] lg:gap-12 lg:items-start">
+        <div className="md:grid md:grid-cols-[minmax(0,1fr)_280px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] md:gap-8 lg:gap-12 md:items-start">
           <div className="max-w-2xl">
             <Outlet />
           </div>
 
-          <aside aria-label={t('nav_home')} className="hidden lg:block lg:sticky lg:top-8">
+          <aside aria-label={t('nav_home')} className="hidden md:block md:sticky md:top-8">
             <FarmerSidebar />
           </aside>
         </div>
@@ -87,7 +91,7 @@ export default function FarmerLayout() {
 
       <nav
         aria-label={t('nav_home')}
-        className="lg:hidden fixed bottom-0 inset-x-0 bg-arisi-50 border-t-2 border-arisi-300 z-30"
+        className="md:hidden fixed bottom-0 inset-x-0 bg-arisi-50 border-t-2 border-arisi-300 z-30"
       >
         <ul className="max-w-2xl mx-auto grid grid-cols-3">
           {TABS.map((tab) => (
