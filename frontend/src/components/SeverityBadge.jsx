@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
 // Urgency is carried by an icon and a word as well as colour, so it reads
-// correctly for colour-blind users and in bright sunlight.
+// correctly for colour-blind users and in bright sunlight. The four tones
+// are a ramp through the site's own palette rather than generic red/amber —
+// calm (pachai) -> watch (arisi/ink) -> caution (turmeric) -> alarm (red earth).
 const STYLES = {
-  high: { icon: '⚠', className: 'bg-red-100 text-red-900 border-red-400' },
-  moderate: { icon: '!', className: 'bg-amber-100 text-amber-900 border-amber-400' },
-  low: { icon: '👁', className: 'bg-sky-100 text-sky-900 border-sky-400' },
+  high: { icon: '⚠', className: 'bg-semmann-100 text-semmann-800 border-semmann-400' },
+  moderate: { icon: '!', className: 'bg-manjal-100 text-mai-900 border-manjal-500' },
+  low: { icon: '👁', className: 'bg-arisi-200 text-mai-800 border-arisi-400' },
   none: { icon: '✓', className: 'bg-pachai-100 text-pachai-900 border-pachai-300' }
 }
 
@@ -28,5 +30,5 @@ export default function SeverityBadge({ severity }) {
 export function SeverityHelp({ severity }) {
   const { t } = useTranslation()
   if (!['high', 'moderate', 'low'].includes(severity)) return null
-  return <p className="text-slate-700 mt-2">{t(`severity_${severity}_help`)}</p>
+  return <p className="text-mai-700 mt-2">{t(`severity_${severity}_help`)}</p>
 }
