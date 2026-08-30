@@ -28,7 +28,7 @@ export default function AdvisoryTicker() {
 
   return (
     <div className="bg-semmann-800 text-arisi-100 text-sm overflow-hidden">
-      <div className="max-w-7xl mx-auto flex items-stretch">
+      <div className="max-w-[1500px] mx-auto flex items-stretch">
         <p className="hidden sm:flex items-center shrink-0 bg-manjal-500 text-kummayam-900 px-4 font-display font-bold uppercase tracking-wider text-xs">
           {t('advisory_label')}
         </p>

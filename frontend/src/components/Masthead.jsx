@@ -18,7 +18,9 @@ export default function Masthead({ to = '/farmer', wide = false, children }) {
   return (
     <div className="bg-kummayam-800 bg-pulli text-arisi-100">
       <div
-        className={`${wide ? 'max-w-7xl' : 'max-w-2xl'} mx-auto px-4 py-4 flex items-center justify-between gap-4`}
+        className={`${
+          wide ? 'max-w-[1800px]' : 'max-w-2xl lg:max-w-[1500px]'
+        } mx-auto px-4 lg:px-10 py-4 flex items-center justify-between gap-4`}
       >
         <Link to={to} className="flex items-center gap-3 rounded-lg min-w-0">
           <Emblem size={44} className="text-manjal-300 shrink-0" />
