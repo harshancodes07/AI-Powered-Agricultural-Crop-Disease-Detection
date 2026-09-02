@@ -141,6 +141,7 @@
   "dash_col_status": "Status",
   "dash_no_reports": "No reports match these filters.",
   "dash_source_note": "Map data © OpenStreetMap contributors",
+  "dash_demo_notice": "Live server unreachable — showing sample demo data so you can preview the dashboard.",
   "disease_early_blight": "Early blight",
   "disease_late_blight": "Late blight",
   "disease_leaf_mold": "Leaf mould",

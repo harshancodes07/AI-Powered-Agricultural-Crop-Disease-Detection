@@ -1,3 +1,11 @@
+import {
+  syntheticCrops,
+  syntheticDiseaseBreakdown,
+  syntheticMapPoints,
+  syntheticSummary,
+  syntheticTrends
+} from './syntheticData'
+
 // Every network call to the backend goes through here.
 //
 // In local dev, paths are same-origin and Vite's proxy forwards /api and
@@ -92,8 +100,46 @@ function dashboard(endpoint, params = {}) {
   return request(`/api/dashboard/${endpoint}?${qs}`)
 }
 
-export const getSummary = (p) => dashboard('summary', p)
-export const getMapPoints = (p) => dashboard('map', p)
-export const getDiseaseBreakdown = (p) => dashboard('diseases', p)
-export const getTrends = (p) => dashboard('trends', p)
-export const getCrops = () => dashboard('crops')
+// The government dashboard is often shown with no live backend behind it
+// (this frontend deployed on its own, or the local API/ML service not
+// started). Rather than surface a bare "Failed to fetch" and leave the page
+// blank, dashboard reads fall back to a fixed synthetic dataset — see
+// syntheticData.js, which mirrors the real endpoints' shapes and filtering
+// exactly. `demoMode` tracks whether we're currently doing that, so the UI
+// can show a small "showing demo data" notice.
+const demoListeners = new Set()
+export const demoMode = { active: false }
+
+function setDemoMode(active) {
+  if (demoMode.active === active) return
+  demoMode.active = active
+  demoListeners.forEach((cb) => cb(active))
+}
+
+export function onDemoModeChange(callback) {
+  demoListeners.add(callback)
+  return () => demoListeners.delete(callback)
+}
+
+function withDemoFallback(fetchReal, fetchSynthetic) {
+  return async (...args) => {
+    try {
+      const data = await fetchReal(...args)
+      setDemoMode(false)
+      return data
+    } catch (err) {
+      console.warn('Dashboard API unreachable, falling back to demo data:', err.message)
+      setDemoMode(true)
+      return fetchSynthetic(...args)
+    }
+  }
+}
+
+export const getSummary = withDemoFallback((p) => dashboard('summary', p), syntheticSummary)
+export const getMapPoints = withDemoFallback((p) => dashboard('map', p), syntheticMapPoints)
+export const getDiseaseBreakdown = withDemoFallback(
+  (p) => dashboard('diseases', p),
+  syntheticDiseaseBreakdown
+)
+export const getTrends = withDemoFallback((p) => dashboard('trends', p), syntheticTrends)
+export const getCrops = withDemoFallback(() => dashboard('crops'), syntheticCrops)

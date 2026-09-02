@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 import GovStrip from '../components/GovStrip'
 import Masthead from '../components/Masthead'
+import { demoMode, onDemoModeChange } from '../services/api'
 
 const TABS = [
   { to: '/dashboard', end: true, labelKey: 'nav_dashboard' },
@@ -22,6 +24,9 @@ const TABS = [
  */
 export default function DashboardLayout() {
   const { t } = useTranslation()
+  const [isDemo, setIsDemo] = useState(demoMode.active)
+
+  useEffect(() => onDemoModeChange(setIsDemo), [])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -75,6 +80,14 @@ export default function DashboardLayout() {
         id="main"
         className="flex-1 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"
       >
+        {isDemo && (
+          <p
+            role="status"
+            className="card mb-6 border-amber-300 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900"
+          >
+            {t('dash_demo_notice')}
+          </p>
+        )}
         <Outlet />
       </main>
     </div>
